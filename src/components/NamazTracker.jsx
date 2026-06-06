@@ -72,11 +72,11 @@ function NamazTracker() {
       <div className="flex items-center gap-4 mb-6">
 
   <div
-    className="
-      bg-purple-700
-      p-3
-      rounded-2xl
-    "
+   className="
+bg-purple-700
+p-2
+rounded-xl
+"
   >
 
     <FaMosque
@@ -93,7 +93,7 @@ function NamazTracker() {
     <h2
       className="
         text-white
-        text-2xl
+        text-lg
         font-bold
       "
     >
@@ -102,8 +102,7 @@ function NamazTracker() {
 
     </h2>
 
-    <p className="text-gray-400">
-
+<p className="text-gray-400 text-xs">
       Track your 5 daily prayers
 
     </p>
@@ -124,7 +123,7 @@ function NamazTracker() {
   justify-between
   items-center
   bg-[#0F172A]
-  p-4
+  p-2
   rounded-2xl
   mb-3
   border
@@ -134,14 +133,12 @@ function NamazTracker() {
 
             <div>
 
-              <h3 className="text-white font-semibold">
-
+<h3 className="text-white text-sm font-semibold">
                 {prayer}
 
               </h3>
 
-              <p className="text-gray-400 text-sm">
-
+<p className="text-gray-400 text-xs">
                 {timings[prayer]}
 
               </p>
