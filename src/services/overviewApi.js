@@ -20,8 +20,7 @@ export async function getOverview() {
 
 }*/
 const BASE_URL =
-"https://habit-tracker-backend-hcsn.onrender.com";
-
+"https://habit-tracker-node-backend.vercel.app";
 export async function getOverview() {
 
     const response =

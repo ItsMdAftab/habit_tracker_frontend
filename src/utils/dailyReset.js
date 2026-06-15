@@ -136,171 +136,199 @@
 }*/
 export async function checkDailyReset() {
 
-  const today =
-    new Date().toDateString();
+const API_URL =
+"https://habit-tracker-node-backend.vercel.app";
 
-  const savedDate =
-    localStorage.getItem(
-      "lastActiveDate"
+// =========================
+// RETRY FAILED SYNC FIRST
+// =========================
+
+const pendingSync =
+JSON.parse(
+localStorage.getItem("pendingSync")
+);
+
+if (pendingSync) {
+
+
+try {
+
+  const prayerResponse =
+    await fetch(
+      `${API_URL}/prayers/savePrayerRecord`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(
+          pendingSync.prayerPayload
+        )
+      }
     );
 
-  // First App Open
-
-  if (!savedDate) {
-
-    localStorage.setItem(
-      "lastActiveDate",
-      today
+  const gymResponse =
+    await fetch(
+      `${API_URL}/Gym/saveGymRecord`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(
+          pendingSync.gymPayload
+        )
+      }
     );
 
-    return;
+  if (
+    prayerResponse.ok &&
+    gymResponse.ok
+  ) {
+
+    localStorage.removeItem(
+      "pendingSync"
+    );
+
+    console.log(
+      "Pending Sync Uploaded"
+    );
 
   }
 
-  // New Day Detected
+} catch (error) {
 
-  if (savedDate !== today) {
+  console.error(
+    "Pending Sync Failed",
+    error
+  );
 
-    const completedPrayers =
-      JSON.parse(
-        localStorage.getItem(
-          "completedPrayers"
+}
+```
+
+}
+
+const today =
+new Date().toDateString();
+
+const savedDate =
+localStorage.getItem(
+"lastActiveDate"
+);
+
+if (!savedDate) {
+
+```
+localStorage.setItem(
+  "lastActiveDate",
+  today
+);
+
+return;
+```
+
+}
+
+if (savedDate !== today) {
+
+```
+const completedPrayers =
+  JSON.parse(
+    localStorage.getItem(
+      "completedPrayers"
+    )
+  ) || {
+
+    Fajr: false,
+    Dhuhr: false,
+    Asr: false,
+    Maghrib: false,
+    Isha: false
+
+  };
+
+const gymCompleted =
+  JSON.parse(
+    localStorage.getItem(
+      "gymCompleted"
+    )
+  ) || false;
+
+const prayerPayload = {
+
+  fajr:
+    completedPrayers.Fajr,
+
+  dhuhr:
+    completedPrayers.Dhuhr,
+
+  asr:
+    completedPrayers.Asr,
+
+  maghrib:
+    completedPrayers.Maghrib,
+
+  isha:
+    completedPrayers.Isha,
+
+  prayerDate:
+    new Date(savedDate)
+      .toISOString()
+      .split("T")[0]
+
+};
+
+const gymPayload = {
+
+  completed:
+    gymCompleted,
+
+  workoutTitle:
+    "Daily Workout",
+
+  workoutData:
+    new Date(savedDate)
+      .toISOString()
+      .split("T")[0]
+
+};
+
+try {
+
+  const prayerResponse =
+    await fetch(
+      `${API_URL}/prayers/savePrayerRecord`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
+        body: JSON.stringify(
+          prayerPayload
         )
-      ) || {
+      }
+    );
 
-        Fajr: false,
-        Dhuhr: false,
-        Asr: false,
-        Maghrib: false,
-        Isha: false
-
-      };
-
-    const gymCompleted =
-      JSON.parse(
-        localStorage.getItem(
-          "gymCompleted"
+  const gymResponse =
+    await fetch(
+      `${API_URL}/Gym/saveGymRecord`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
+        body: JSON.stringify(
+          gymPayload
         )
-      ) || false;
+      }
+    );
 
-    // =====================
-    // SEND PRAYER DATA
-    // =====================
-
-    const prayerPayload = {
-
-      fajr:
-        completedPrayers.Fajr,
-
-      dhuhr:
-        completedPrayers.Dhuhr,
-
-      asr:
-        completedPrayers.Asr,
-
-      maghrib:
-        completedPrayers.Maghrib,
-
-      isha:
-        completedPrayers.Isha,
-
-      prayerDate:
-        new Date(savedDate)
-          .toISOString()
-          .split("T")[0]
-
-    };
-
-    try {
-
-     await fetch(
-  "https://habit-tracker-backend-hcsn.onrender.com/prayers/savePrayerRecord",
-
-        {
-
-          method: "POST",
-
-          headers: {
-
-            "Content-Type":
-              "application/json"
-
-          },
-
-          body:
-            JSON.stringify(
-              prayerPayload
-            )
-
-        }
-
-      );
-
-    } catch (error) {
-
-      console.error(
-        "Prayer Upload Failed",
-        error
-      );
-
-    }
-
-    // =====================
-    // SEND GYM DATA
-    // =====================
-
-    const gymPayload = {
-
-      completed:
-        gymCompleted,
-
-      workoutTitle:
-        "Daily Workout",
-
-      workoutData:
-        new Date(savedDate)
-          .toISOString()
-          .split("T")[0]
-
-    };
-
-    try {
-
-  await fetch(
-  "https://habit-tracker-backend-hcsn.onrender.com/Gym/saveGymRecord",
-
-        {
-
-          method: "POST",
-
-          headers: {
-
-            "Content-Type":
-              "application/json"
-
-          },
-
-          body:
-            JSON.stringify(
-              gymPayload
-            )
-
-        }
-
-      );
-
-    } catch (error) {
-
-      console.error(
-        "Gym Upload Failed",
-        error
-      );
-
-    }
-
-    // =====================
-    // SAVE HISTORY
-    // =====================
+  if (
+    prayerResponse.ok &&
+    gymResponse.ok
+  ) {
 
     const totalCompletedPrayers =
 
@@ -326,48 +354,25 @@ export async function checkDailyReset() {
     };
 
     localStorage.setItem(
-
       "dailyHistory",
-
       JSON.stringify(history)
-
     );
 
-    // =====================
-    // RESET NAMAZ
-    // =====================
-
     localStorage.setItem(
-
       "completedPrayers",
-
       JSON.stringify({
-
         Fajr: false,
         Dhuhr: false,
         Asr: false,
         Maghrib: false,
         Isha: false
-
       })
-
     );
-
-    // =====================
-    // RESET GYM
-    // =====================
 
     localStorage.setItem(
-
       "gymCompleted",
-
       JSON.stringify(false)
-
     );
-
-    // =====================
-    // TASKS
-    // =====================
 
     const savedTasks =
       JSON.parse(
@@ -378,32 +383,52 @@ export async function checkDailyReset() {
 
     const remainingTasks =
       savedTasks.filter(
-        (task) =>
+        task =>
           !task.completed
       );
 
     localStorage.setItem(
-
       "dailyTasks",
-
       JSON.stringify(
         remainingTasks
       )
-
     );
 
-    // =====================
-    // UPDATE DATE
-    // =====================
-
     localStorage.setItem(
-
       "lastActiveDate",
-
       today
+    );
 
+    console.log(
+      "Daily Sync Success"
+    );
+
+  } else {
+
+    throw new Error(
+      "Upload Failed"
     );
 
   }
+
+} catch (error) {
+
+  console.error(
+    "Sync Failed",
+    error
+  );
+
+  localStorage.setItem(
+    "pendingSync",
+    JSON.stringify({
+      prayerPayload,
+      gymPayload
+    })
+  );
+
+}
+
+
+}
 
 }
