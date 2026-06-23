@@ -1,15 +1,26 @@
 import {
-  BrowserRouter,
   Routes,
-  Route,
-  Link
-} from 'react-router-dom'
-import { checkDailyReset }
-from './utils/dailyReset'
-import Home from './pages/Home'
-import Overview from './pages/Overview'
-import Settings from './pages/Settings'
-import { useEffect } from "react";
+  Route
+} from "react-router-dom";
+
+import {
+  useEffect
+} from "react";
+
+import {
+  checkDailyReset
+} from "./utils/dailyReset";
+
+import Home from "./pages/Home";
+import Overview from "./pages/Overview";
+import Settings from "./pages/Settings";
+import Analytics from "./pages/Analytics";
+import PrayerAnalytics from "./pages/PrayerAnalytics";
+import GymAnalytics from "./pages/GymAnalytics";
+import QuranAnalytics from "./pages/QuranAnalytics";
+
+import BottomNav from "./BottomNav";
+
 function App() {
 
   useEffect(() => {
@@ -17,41 +28,10 @@ function App() {
     checkDailyReset();
 
   }, []);
+
   return (
 
-    <div>
-
-      <nav
-        style={{
-          display: "flex",
-          gap: "20px",
-          padding: "20px",
-          backgroundColor: "#111827"
-        }}
-      >
-
-        <Link
-          style={{ color: "white" }}
-          to="/"
-        >
-          Home
-        </Link>
-
-        <Link
-          style={{ color: "white" }}
-          to="/overview"
-        >
-          Overview
-        </Link>
-
-        <Link
-          style={{ color: "white" }}
-          to="/settings"
-        >
-          Settings
-        </Link>
-
-      </nav>
+    <div className="pb-20 bg-[#0B1120] min-h-screen">
 
       <Routes>
 
@@ -70,11 +50,34 @@ function App() {
           element={<Settings />}
         />
 
+        <Route
+          path="/analytics"
+          element={<Analytics />}
+        />
+
+        <Route
+          path="/analytics/prayer"
+          element={<PrayerAnalytics />}
+        />
+
+        <Route
+          path="/analytics/gym"
+          element={<GymAnalytics />}
+        />
+
+        <Route
+          path="/analytics/quran"
+          element={<QuranAnalytics />}
+        />
+
       </Routes>
+
+      <BottomNav />
 
     </div>
 
-  )
+  );
+
 }
 
-export default App
+export default App;
