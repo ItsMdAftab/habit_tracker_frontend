@@ -204,7 +204,7 @@ try {
   );
 
 }
-```
+
 
 }
 
@@ -218,20 +218,20 @@ localStorage.getItem(
 
 if (!savedDate) {
 
-```
+
 localStorage.setItem(
   "lastActiveDate",
   today
 );
 
 return;
-```
+
 
 }
 
 if (savedDate !== today) {
 
-```
+
 const completedPrayers =
   JSON.parse(
     localStorage.getItem(
